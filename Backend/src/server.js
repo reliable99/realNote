@@ -3,6 +3,7 @@ import cors from "cors"
 import noteRoutes from "./routes/noteRoutes.js"
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv"
+import path from "path"
 
 dotenv.config()
 
@@ -11,6 +12,7 @@ dotenv.config()
 const app = express()
 
 const PORT = process.env.PORT || 5001
+const __dirname = path.resolve()
 
 // middleware
 app.use(express.json());
@@ -22,12 +24,20 @@ app.use(
 )
 
 
-
-
-
-
-
 app.use("/api/notes", noteRoutes);
+
+app.use(express.static(path.join(__dirname,"../Frontend/dist")))
+
+ if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Frontend", "dist", "index.html"));
+  });
+}
+
+
+
 
 connectDB()
 
